@@ -1,0 +1,177 @@
+:root {
+  --borderColor: #ffd04b;
+  --backColor: #545c64;
+  --backColorActive: rgba(0, 0, 0, 0.486);
+  --fontColor: white;
+  --fontColorActive: #ffd04b;
+}
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 0px;
+  height: 100%;
+}
+.el-header {
+  z-index: 2 !important;
+  padding: 0;
+}
+
+.el-main {
+  background-color: rgb(150, 138, 124);
+  height: auto;
+  position: absolute;
+  bottom: 30px;
+  top: 60px;
+  width: 100%;
+  padding: 0;
+}
+#mainConetent {
+  border-top: var(--borderColor) 1px solid;
+}
+/* 右侧工具栏 */
+#rightAsideBar .el-tabs__item {
+  width: 60px;
+  line-height: 24px;
+  height: auto;
+  word-wrap: break-word;
+  white-space: pre-line;
+  margin-bottom: 20px;
+}
+#rightAsideBar .el-tabs__active-bar {
+  display: none;
+}
+#rightAsideBar .el-tabs__item {
+  margin: 0;
+  padding: 5px 5px;
+  width: 25px;
+  text-align: center;
+  border-top: 1px var(--borderColor) solid;
+  border-bottom: 1px var(--borderColor) solid;
+  background-color: var(--backColor);
+  color: var(--fontColor);
+  line-height: 19px;
+}
+#rightAsideBar .is-active {
+  color: var(--fontColorActive);
+}
+#rightAsideBar .el-icon-close {
+  margin: 0;
+  text-align: left;
+  background-color: var(--backColor);
+}
+#rightAsideBar .el-tabs__content {
+  height: 100%;
+}
+#rightAsideBar .el-tabs__header {
+  margin: 0;
+  border-right: 2px var(--backColor) solid;
+}
+#rightAsideBar .el-tabs--left .el-tabs__nav-wrap.is-left::after,
+#rightAsideBar .el-tabs--left .el-tabs__nav-wrap.is-right::after,
+#rightAsideBar .el-tabs--right .el-tabs__nav-wrap.is-left::after,
+#rightAsideBar .el-tabs--right .el-tabs__nav-wrap.is-right::after {
+  height: 100%;
+  width: 0px;
+  bottom: auto;
+  top: 0;
+}
+/* #rightAsideBar .el-tabs__nav-wrap {
+  margin: 0;
+} */
+/* 左侧工具栏 */
+/* #leftAsideBar {
+  border-right: 1px var(--backColor) solid;
+  border-left: 1px var(--backColor) solid;
+} */
+#leftAsideBar .el-tabs__item {
+  width: 60px;
+  line-height: 24px;
+  height: auto;
+  word-wrap: break-word;
+  white-space: pre-line;
+  margin-bottom: 20px;
+}
+#leftAsideBar .el-tabs__active-bar {
+  display: none;
+}
+#leftAsideBar .el-tabs__item {
+  margin: 0;
+  padding: 5px 5px;
+  width: 25px;
+  text-align: center;
+  border-top: 1px var(--borderColor) solid;
+  border-bottom: 1px var(--borderColor) solid;
+  background-color: var(--backColor);
+  color: var(--fontColor);
+  line-height: 19px;
+}
+#leftAsideBar .is-active {
+  color: var(--fontColorActive);
+}
+#leftAsideBar .el-icon-close {
+  margin: 0;
+  text-align: left;
+  background-color: var(--backColor);
+}
+#leftAsideBar .el-tabs__content,
+#rightAsideBar .el-tabs__content {
+  height: 100%;
+  border: var(--borderColor) 1px solid;
+  background-color: var(--backColor);
+  color: var(--fontColor);
+}
+#leftAsideBar .el-tabs__header {
+  margin: 0;
+  border-left: 2px var(--backColor) solid;
+}
+#leftAsideBar .el-tabs--left .el-tabs__nav-wrap.is-left::after,
+#leftAsideBar .el-tabs--left .el-tabs__nav-wrap.is-right::after,
+#leftAsideBar .el-tabs--right .el-tabs__nav-wrap.is-left::after,
+#leftAsideBar .el-tabs--right .el-tabs__nav-wrap.is-right::after {
+  height: 100%;
+  width: 0px;
+  bottom: auto;
+  top: 0;
+}
+
+#leftAsideBar .el-tree {
+  color: var(--fontColor);
+}
+#leftAsideBar .el-tree-node__content {
+  background-color: var(--backColor);
+}
+.el-footer {
+  position: absolute;
+  height: 30px !important;
+  bottom: 0;
+  background-color: var(--backColor);
+  width: 100%;
+  text-align: left;
+  line-height: 30px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--fontColor);
+  overflow: hidden;
+  border-top: var(--borderColor) 1px solid;
+}
+.footerIcon {
+  padding: 0px 10px;
+  /* background-color: rgba(0, 0, 0, 0.2); */
+  padding: 3px 10px;
+  border-radius: 5px;
+  border: var(--fontColor) 1px solid;
+}
+/* 菜单栏 */
+ul[role="menu"] {
+  /* background-color: var(--borderColor) !important; */
+  border: var(--borderColor) 1px solid;
+}
+ul[role="menu"] li[role="menuitem"]:hover {
+  background-color: var(--borderColor) !important;
+}
+ul[role="menu"] .el-checkbox {
+  color: var(--fontColor);
+}
