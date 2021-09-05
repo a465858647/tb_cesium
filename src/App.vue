@@ -21,7 +21,7 @@
         <el-aside width="300px" id="leftAsideBar" v-if="navMenuChecked.layerControlChecked">
           <el-tabs v-model="leftAsideValue" tab-position="right" style="height: 100%;" @tab-remove="leftAsideBarTabClose">
             <el-tab-pane label="图层" closable name="layerControl" v-if="navMenuChecked.layerControlChecked">
-              <el-tree :data="layerControl.layerControlData" ref="layerControlTree" :props="layerControl.layerControlProps" class="tabContent" show-checkbox node-key="id" :default-expanded-keys="['1','2']" :default-checked-keys="layerControlcheckedKeys" @check-change="layerControl.layerTreesCheckChanged"></el-tree>
+              <el-tree :data="layerControl.layerControlData" ref="layerControlTree" :props="layerControl.layerControlProps" class="tabContent" show-checkbox node-key="id" :default-expanded-keys="['1','2','3']" :default-checked-keys="layerControlcheckedKeys" @check-change="layerControl.layerTreesCheckChanged"></el-tree>
             </el-tab-pane>
           </el-tabs>
         </el-aside>
@@ -30,7 +30,84 @@
         </div>
         <el-aside width="350px" id="rightAsideBar" v-if="navMenuChecked.earthWorkChecked">
           <el-tabs v-model="rightAsideValue" tab-position="left" style="height: 100%;" @tab-remove="rightAsideBarTabClose">
-            <el-tab-pane label="土方开挖" closable name="earthWork">土方开挖</el-tab-pane>
+            <el-tab-pane label="土方开挖" closable name="earthWork">
+              <el-container direction="vertical" style="border:1px solid #7a7e86">
+                <el-row :gutter="20" style="padding:auto;margin:5px 0px;left:0;right:0;top:0;bottom:0;width:100%;">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0;right:0;top:0;bottom:0;width:50%">
+                    <el-button style="width:100%" icon="el-icon-edit" size="mini" type="info" @click="earthWorkControl.drawExcavateRange">绘制工程范围</el-button>
+                  </el-col>
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0;right:0;top:0;bottom:0;width:50%;height:28px">
+                    <div style="height:28px;line-height:28px ;color:#fff;font-style: italic;">面积 {{earthWorkControl.earthWordArea}} 平方米</div>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%;">
+                    <div style="padding: 4.5px 0;color:white;text-align: center;font:14px Arial;display:inline-block;width:100%;font-weight:bold;">三角网精度(米)</div>
+                  </el-col>
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <el-input size="mini" v-model="earthWorkControl.riangleSideLength"></el-input>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%;">
+                    <div style="padding: 4.5px 0;color:white;text-align: center;font:14px Arial;display:inline-block;width:100%;font-weight:bold;">超平高程(米)</div>
+                  </el-col>
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <el-input size="mini" v-model="earthWorkControl.earthWordHeight"></el-input>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%;">
+                    <div style="padding: 4.5px 0;color:white;text-align: center;font:14px Arial;display:inline-block;width:100%;font-weight:bold;">渲染三角网</div>
+                  </el-col>
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;">
+
+                    <div style="height:28px;line-height:28px ;color:#fff;font-style: italic;display:inline-block">
+                      <el-switch style="display:inline-block" active-text="是" inactive-text="否" v-model="earthWorkControl.isRender" active-color="#13ce66" inactive-color="#EE3B3B">
+                      </el-switch>
+                    </div>
+
+                  </el-col>
+
+                </el-row>
+                <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <el-button style="width:100%" icon="el-icon-mouse" size="mini" type="info" @click="earthWorkControl.drawTriangulation">三角网计算</el-button>
+                  </el-col>
+
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;">
+                    <div style="height:28px;line-height:28px ;color:#fff;font-style: italic;"> {{earthWorkControl.riangleCount}} 个</div>
+                  </el-col>
+                </el-row>
+
+              </el-container>
+              <el-container style="border-left:1px solid #7a7e86;border-right:1px solid #7a7e86;border-bottom:1px solid #7a7e86" direction="vertical">
+                <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <div style="padding: 4.5px 0;color:white;text-align: center;font:14px Arial;display:inline-block;width:100%;font-weight:bold;">挖方量(立方米)</div>
+                  </el-col>
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <el-input size="mini" v-model="earthWorkControl.excavationVolume"></el-input>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <div style="padding: 4.5px 0;color:white;text-align: center;font:14px Arial;display:inline-block;width:100%;font-weight:bold;">填方量(立方米)</div>
+                  </el-col>
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <el-input size="mini" v-model="earthWorkControl.fillVolume"></el-input>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <el-button style="width:100%" icon="el-icon-edit" size="mini" type="primary" @click="computeEarthWorkVolume(this_)">计算土方量</el-button>
+                  </el-col>
+                  <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
+                    <el-button style="width:100%" icon="el-icon-refresh" size="mini" type="danger" @click="resetEarthWorkOption(this_)"> 重置</el-button>
+                  </el-col>
+                </el-row>
+              </el-container>
+            </el-tab-pane>
           </el-tabs>
         </el-aside>
       </el-container>
@@ -66,6 +143,9 @@
         <div style="display:inline-block">35.454544</div>
         <el-divider direction="vertical"></el-divider>
       </i>
+      <i class="el-icon-pie-chart   footerIcon" v-if="progressBarShow">
+        <el-progress :stroke-width="8" :percentage="progressPercentage" style="width:220px;display:inline-block;padding-left:10px"></el-progress>
+      </i>
     </el-footer>
   </div>
 </template>
@@ -74,6 +154,7 @@
 import * as Cesium from 'cesium';
 import './assets/app.css';
 import LayerControl from './js/layerControl';
+import EarthWorkControl from './js/earthWork';
 
 
 export default {
@@ -84,8 +165,13 @@ export default {
       viewerId,
       /* 头部导航栏 */
       navMenuChecked: { layerControlChecked: true, earthWorkChecked: false },
-      /* 菜单控制 */
+      /* 图层控制 */
       layerControl: new LayerControl(viewerId, this),
+      /* 土石方开挖 */
+      earthWorkControl: new EarthWorkControl(viewerId, this),
+      /* 进度条 */
+      progressBarShow: false,
+      progressPercentage: 0,
       /* 左侧工具栏 */
       leftAsideValue: 'layerControl',
       layerControlcheckedKeys: [],
@@ -113,6 +199,18 @@ export default {
         }
         if (newValue.earthWorkChecked === true && oldValue.earthWorkChecked === false) {
           this.rightAsideValue = 'earthWork';
+          /* 加载倾斜影像 */
+          this.layerControlcheckedKeys.push('3-1');
+          this.$refs.layerControlTree.setCheckedKeys(this.layerControlcheckedKeys);
+          /* 缩放至土方开挖区域 */
+          window[this.viewerId].camera.setView({
+            destination: new Cesium.Cartesian3(-2108796.0220383317, 4805915.002069981, 3614304.859235633),
+            orientation: {
+              heading: 0.6091569770611214,
+              pitch: -0.37831468993759243,
+              roll: 0.0019361826038952756,
+            },
+          });
         }
       },
       deep: true,
