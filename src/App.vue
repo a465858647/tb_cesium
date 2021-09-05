@@ -8,23 +8,29 @@
             <el-checkbox v-model="navMenuChecked.layerControlChecked" style="width:100%">图层管理</el-checkbox>
           </el-menu-item>
         </el-submenu>
+        <el-submenu index="2">
+          <template slot="title">工程应用</template>
+          <el-menu-item index="2-1">
+            <el-checkbox v-model="navMenuChecked.earthWorkChecked" style="width:100%">土方开挖</el-checkbox>
+          </el-menu-item>
+        </el-submenu>
       </el-menu>
     </el-header>
     <el-main>
       <el-container style="height:100%">
         <el-aside width="300px" id="leftAsideBar" v-if="navMenuChecked.layerControlChecked">
-          <el-tabs value="layerControl" tab-position="right" style="height: 100%;" @tab-remove="leftAsideBarTabClose">
+          <el-tabs v-model="leftAsideValue" tab-position="right" style="height: 100%;" @tab-remove="leftAsideBarTabClose">
             <el-tab-pane label="图层" closable name="layerControl" v-if="navMenuChecked.layerControlChecked">
-              <el-tree :data="layerControl.layerControlData" ref="layerControlTree" :props="layerControl.layerControlProps" class="tabContent" show-checkbox node-key="id" :default-expanded-keys="['1']" :default-checked-keys="['']" @check-change="layerControl.layerTreesCheckChanged"></el-tree>
+              <el-tree :data="layerControl.layerControlData" ref="layerControlTree" :props="layerControl.layerControlProps" class="tabContent" show-checkbox node-key="id" :default-expanded-keys="['1','2']" :default-checked-keys="layerControlcheckedKeys" @check-change="layerControl.layerTreesCheckChanged"></el-tree>
             </el-tab-pane>
           </el-tabs>
         </el-aside>
         <div id="mainConetent">
           <div id="cesiumContainer"></div>
         </div>
-        <el-aside width="350px" id="rightAsideBar">
-          <el-tabs value="1" tab-position="left" style="height: 100%;" @tab-remove="rightAsideBarTabClose">
-            <el-tab-pane label="用户管理" closable name="1">用户管理</el-tab-pane>
+        <el-aside width="350px" id="rightAsideBar" v-if="navMenuChecked.earthWorkChecked">
+          <el-tabs v-model="rightAsideValue" tab-position="left" style="height: 100%;" @tab-remove="rightAsideBarTabClose">
+            <el-tab-pane label="土方开挖" closable name="earthWork">土方开挖</el-tab-pane>
           </el-tabs>
         </el-aside>
       </el-container>
@@ -77,20 +83,40 @@ export default {
     return {
       viewerId,
       /* 头部导航栏 */
-      navMenuChecked: { layerControlChecked: true },
+      navMenuChecked: { layerControlChecked: true, earthWorkChecked: false },
       /* 菜单控制 */
-      layerControl: new LayerControl(viewerId),
+      layerControl: new LayerControl(viewerId, this),
+      /* 左侧工具栏 */
+      leftAsideValue: 'layerControl',
+      layerControlcheckedKeys: [],
+      /* 右侧工具栏 */
+      rightAsideValue: 'earthWork',
     };
   },
   mounted() {
     this.initCesium().then((viewer) => {
       window[this.viewerId] = viewer;
       /* 初始化默认影像 */
-      this.$refs.layerControlTree.setCheckedKeys(['1-2']);
+      this.$refs.layerControlTree.setCheckedKeys(['1-1']);
     });
   },
+  computed: {
+    navMenuCheckedNew() {
+      return JSON.parse(JSON.stringify(this.navMenuChecked));
+    },
+  },
   watch: {
-
+    navMenuCheckedNew: {
+      handler(newValue, oldValue) {
+        if (newValue.layerControlChecked === true && oldValue.layerControlChecked === false) {
+          this.leftAsideValue = 'layerControl';
+        }
+        if (newValue.earthWorkChecked === true && oldValue.earthWorkChecked === false) {
+          this.rightAsideValue = 'earthWork';
+        }
+      },
+      deep: true,
+    },
   },
   methods: {
     /* 初始化地图 */

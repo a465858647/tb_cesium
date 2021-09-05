@@ -10,6 +10,13 @@ const layerControlDataOption = [{
     id: '1-2',
     label: '天地图',
   }],
+}, {
+  id: '2',
+  label: '地形',
+  children: [{
+    id: '2-1',
+    label: '土方开挖片区',
+  }],
 }];
 const layerControlPropsOption = {
   children: 'children',
@@ -42,25 +49,47 @@ const cesiumImageryLayer = new Cesium.ImageryLayer(
     mapStyle: Cesium.BingMapsStyle.AERIAL,
   }),
 );
+const earthWorkTerrainProvider = new Cesium.CesiumTerrainProvider({
+  url: 'http://172.16.100.8:8001/金水区三维模型/未来路街道模型/dem20210830',
+  requestVertexNormals: true,
+});
+const ellipsoidTerrainProvider = new Cesium.EllipsoidTerrainProvider();
 export default class LayerControl {
-  constructor(viewerId, layerControlData, layerControlProps) {
+  constructor(viewerId, vue, layerControlData, layerControlProps) {
     this.viewerId = viewerId;
+    this.vue = vue;
     this.layerControlData = layerControlData || layerControlDataOption;
     this.layerControlProps = layerControlProps || layerControlPropsOption;
   }
   layerTreesCheckChanged = (obj, selected, hasChild) => {
+    const nodeId = obj.id;
     if (hasChild === false) {
       if (obj.label === 'Cesium' && selected === true) {
         window[this.viewerId].imageryLayers.add(cesiumImageryLayer);
+        this.vue.layerControlcheckedKeys.push(nodeId);
       }
       if (obj.label === 'Cesium' && selected === false) {
         window[this.viewerId].imageryLayers.remove(cesiumImageryLayer, false);
+        const index = this.vue.layerControlcheckedKeys.findIndex(id => id === nodeId);
+        this.vue.layerControlcheckedKeys.splice(index, 1);
       }
       if (obj.label === '天地图' && selected === true) {
         window[this.viewerId].imageryLayers.add(tdtImageryLayer);
+        this.vue.layerControlcheckedKeys.push(nodeId);
       }
       if (obj.label === '天地图' && selected === false) {
         window[this.viewerId].imageryLayers.remove(tdtImageryLayer, false);
+        const index = this.vue.layerControlcheckedKeys.findIndex(id => id === nodeId);
+        this.vue.layerControlcheckedKeys.splice(index, 1);
+      }
+      if (obj.label === '土方开挖片区' && selected === true) {
+        window[this.viewerId].terrainProvider = earthWorkTerrainProvider;
+        this.vue.layerControlcheckedKeys.push(nodeId);
+      }
+      if (obj.label === '土方开挖片区' && selected === false) {
+        window[this.viewerId].terrainProvider = ellipsoidTerrainProvider;
+        const index = this.vue.layerControlcheckedKeys.findIndex(id => id === nodeId);
+        this.vue.layerControlcheckedKeys.splice(index, 1);
       }
     }
   }
