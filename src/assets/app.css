@@ -20,16 +20,19 @@
 }
 
 .el-main {
-  background-color: rgb(150, 138, 124);
+  /* background-color: rgb(150, 138, 124); */
   height: auto;
   position: absolute;
   bottom: 30px;
   top: 60px;
   width: 100%;
   padding: 0;
+  overflow: hidden;
 }
 #mainConetent {
   border-top: var(--borderColor) 1px solid;
+  height: calc (100%-1px);
+  width: calc(100% + 0px);
 }
 /* 右侧工具栏 */
 #rightAsideBar .el-tabs__item {
@@ -62,9 +65,7 @@
   text-align: left;
   background-color: var(--backColor);
 }
-#rightAsideBar .el-tabs__content {
-  height: 100%;
-}
+
 #rightAsideBar .el-tabs__header {
   margin: 0;
   border-right: 2px var(--backColor) solid;
@@ -175,7 +176,14 @@ ul[role="menu"] li[role="menuitem"]:hover {
 ul[role="menu"] .el-checkbox {
   color: var(--fontColor);
 }
-#cesiumContainer,
+#cesiumContainer {
+  background-color: rgb(207, 103, 103);
+  position: relative;
+  width: calc(100% + 50px);
+  left: -25px;
+  height: 100%;
+}
+
 .cesium-viewer,
 .cesium-viewer-cesiumWidgetContainer,
 .cesium-widget {
