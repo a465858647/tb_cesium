@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
 import * as Cesium from 'cesium';
 import * as turf from '@turf/turf';
@@ -198,10 +199,121 @@ export default class EarthWorkControl {
     this.riangleCount = triangleNetPositions.length;
     /* 递归分割三角网  end */
     const renderIndex = 0;
-    console.log(triangleNetPositions);
     // eslint-disable-next-line no-use-before-define
     const viewer = window[this.viewerId];
     renderTriangle(triangleNetPositions, renderIndex, this.vue, this, viewer);
+  }
+  computeEarthWorkVolume = () => {
+    if (this.rianglePositions.length === 0) {
+      this.vue.$message.error('请首先进行三角网计算！');
+      return;
+    }
+    this.vue.progressBarShow = true;
+    for (let i = 0; i < this.rianglePositions.length; i += 1) {
+      // eslint-disable-next-line no-underscore-dangle
+      const positions = this.rianglePositions[i].concat(this.rianglePositions[i][0]);
+      /* 计算三角形得面积 */
+      const area = computeArea(positions);
+      // console.log(area);
+      /* 求三角形中心点 */
+      const center = new Cesium.Cartesian3((positions[0].x + positions[1].x + positions[2].x) / 3, (positions[0].y + positions[1].y + positions[2].y) / 3, (positions[0].z + positions[1].z + positions[2].z) / 3);
+      /* 计算设计高差 */
+      const centerHeight = Cesium.Cartographic.fromCartesian(center).height;
+      const heightDifference = centerHeight - this.earthWordHeight;
+      /* 计算单个土方量 */
+      const oneVolume = area * heightDifference;
+      if (oneVolume < 0) {
+        this.fillVolume += oneVolume * -1;
+      } else {
+        this.excavationVolume += oneVolume;
+      }
+      /* 前端绘制 start */
+      if (this.isRender === true) {
+        const color = heightDifference > 0 ? Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.BLUE.withAlpha(0.3)) : Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.YELLOW.withAlpha(0.3));
+        const polygonGeometry = new Cesium.PolygonOutlineGeometry({
+          polygonHierarchy: new Cesium.PolygonHierarchy(positions),
+          extrudedHeight: this.earthWordHeight,
+          perPositionHeight: true,
+        });
+        const polygonInstance = new Cesium.GeometryInstance({
+          geometry: polygonGeometry,
+          attributes: {
+            color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.RED),
+          },
+        });
+        const polygonGeometry2 = new Cesium.PolygonGeometry({
+          polygonHierarchy: new Cesium.PolygonHierarchy(positions),
+          extrudedHeight: this.earthWordHeight,
+          perPositionHeight: true,
+        });
+        const polygonInstance2 = new Cesium.GeometryInstance({
+          geometry: polygonGeometry2,
+          attributes: {
+            color,
+          },
+        });
+        const primitiveClo = new Cesium.PrimitiveCollection();
+        primitiveClo.add(new Cesium.Primitive({
+          geometryInstances: [polygonInstance],
+          appearance: new Cesium.PerInstanceColorAppearance({
+            flat: true,
+            translucent: false,
+          }),
+        }));
+        primitiveClo.add(new Cesium.Primitive({
+          geometryInstances: [polygonInstance2],
+          appearance: new Cesium.PerInstanceColorAppearance({
+            flat: false,
+            translucent: true,
+          }),
+        }));
+        if (this.isRender === true) {
+          const earthWorkPrimitive = window.earthWorkPrimitives[i];
+          window[this.viewerId].scene.primitives.remove(earthWorkPrimitive);
+          window.earthWorkPrimitives[i] = primitiveClo;
+          window[this.viewerId].scene.primitives.add(primitiveClo);
+        } else {
+          if (window.earthWorkPrimitives === undefined) {
+            window.earthWorkPrimitives = [];
+          }
+          window.earthWorkPrimitives.push(primitiveClo);
+          window.viewer.scene.primitives.add(primitiveClo);
+        }
+      }
+
+      /* 前端绘制 end */
+      this.vue.progressPercentage = parseInt((i * 10000) / this.rianglePositions.length, 0) / 100;
+      if (i === this.rianglePositions.length - 1) {
+        this.excavationVolume = Math.round(this.excavationVolume);
+        this.fillVolume = Math.round(this.fillVolume);
+
+        this.vue.progressBarShow = false;
+        this.vue.progressPercentage = 0;
+        this.vue.$message({
+          type: 'success',
+          message: '土方量计算完成！',
+        });
+      }
+    }
+  }
+  resetEarthWorkOption = () => {
+    if (window[this.viewerId].entities.getById(earthWordPolygonId)) {
+      window[this.viewerId].entities.remove(window[this.viewerId].entities.getById(earthWordPolygonId));
+    }
+    if (window.earthWorkPrimitives !== undefined && window.earthWorkPrimitives.length > 0) {
+      window.earthWorkPrimitives.forEach((earthWorkPrimitive) => {
+        window[this.viewerId].scene.primitives.remove(earthWorkPrimitive);
+      });
+      window.earthWorkPrimitives = [];
+    }
+    this.earthWordPolygonPositions = undefined;
+    this.rianglePositions = [];
+    this.earthWordArea = 0;
+    this.earthWordHeight = 95;
+    this.riangleSideLength = 5;
+    this.riangleCount = 0;
+    this.excavationVolume = 0;// 挖方量
+    this.fillVolume = 0; // 填方量
   }
 }
 
@@ -273,4 +385,15 @@ function renderTriangle(triangleNetPositions, renderIndex, vue, control, viewer)
     renderTriangle(triangleNetPositions, renderIndex, vue, control, viewer);
   });
 }
+function computeArea(positions) {
+  const turfPositions = [];
+  positions.forEach((position) => {
+    const cartographic = Cesium.Cartographic.fromCartesian(position);
+    const turfPt = [Cesium.Math.toDegrees(cartographic.longitude), Cesium.Math.toDegrees(cartographic.latitude)];
+    turfPositions.push(turfPt);
+  });
+  const polygon = turf.polygon([turfPositions]);
 
+  const area = turf.area(polygon);
+  return area;
+}

@@ -100,10 +100,10 @@
                 </el-row>
                 <el-row :gutter="20" style="padding:auto;margin:5px 0;left:0,right:0;top:0;bottom:0;width:100%">
                   <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
-                    <el-button style="width:100%" icon="el-icon-edit" size="mini" type="primary" @click="computeEarthWorkVolume(this_)">计算土方量</el-button>
+                    <el-button style="width:100%" icon="el-icon-edit" size="mini" type="primary" @click="earthWorkControl.computeEarthWorkVolume">计算土方量</el-button>
                   </el-col>
                   <el-col :span="12" style="padding:auto;margin:auto;left:0,right:0;top:0;bottom:0;width:50%">
-                    <el-button style="width:100%" icon="el-icon-refresh" size="mini" type="danger" @click="resetEarthWorkOption(this_)"> 重置</el-button>
+                    <el-button style="width:100%" icon="el-icon-refresh" size="mini" type="danger" @click="earthWorkControl.resetEarthWorkOption"> 重置</el-button>
                   </el-col>
                 </el-row>
               </el-container>
