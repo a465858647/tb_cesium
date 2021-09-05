@@ -19,8 +19,8 @@
             </el-tab-pane>
           </el-tabs>
         </el-aside>
-        <el-container id="mainConetent">
-          <div id="viewer" style="width:100%;height:100%"></div>
+        <el-container id="mainConetent" style="height: 100%">
+          <div id="cesiumContainer"></div>
         </el-container>
         <el-aside width="350px" v-if="rightAsideShow" id="rightAsideBar">
           <el-tabs v-model="rightAsideBarTabValue" tab-position="left" style="height: 100%;" @tab-remove="rightAsideBarTabClose">
@@ -66,7 +66,9 @@
 </template>
 
 <script>
+import * as Cesium from 'cesium';
 import './assets/app.css';
+
 
 export default {
   name: 'App',
@@ -94,28 +96,56 @@ export default {
       tabNoShow: false,
     };
   },
+  mounted() {
+    this.initCesium();
+  },
   methods: {
+    initCesium() {
+      Cesium.Ion.defaultAccessToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0NzIwNzRjYy0xZjdmLTQwOTItOTNkZi1iNzY4ZTJiMTdiNmIiLCJpZCI6Mjg2NjUsImlhdCI6MTYyNzYyODY1N30.J4GerqBI7XdoqNoa1y0p9NnY-aObsDKQBm-0nSMj558';
+      // eslint-disable-next-line no-unused-vars
+      const viewer = new Cesium.Viewer('cesiumContainer', {
+        animation: false,
+        baseLayerPicker: false,
+        fullscreenButton: false,
+        vrButton: false,
+        geocoder: false,
+        homeButton: false,
+        infoBox: false,
+        sceneModePicker: false,
+        selectionIndicator: false,
+        timeline: false,
+        navigationHelpButton: false,
+        shouldAnimate: true,
+        // terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+        // skyAtmosphere: true,
+      });
+      // viewer.imageryLayers.removeAll();
+      viewer.scene.globe.baseColor = Cesium.Color.LIGHTSLATEGREY;
+      // eslint-disable-next-line no-underscore-dangle
+      viewer._cesiumWidget._creditContainer.style.display = 'none';
+      // viewer.scene.requestRenderMode = true;
+      // viewer.scene.maximumRenderTimeChange = Infinity;
+      // viewer.scene.debugShowCommands = true;
+      // viewer.scene.globe.maximumScreenSpaceError = 1;
+      // viewer.scene.fxaa = true;
+      // viewer.scene.mode = Cesium.SceneMode.SCENE2D;
+      // 组件创建完成之后，自定义事件，向父组件传递数据
+      // this.$emit('receive', [viewer, this.user]);
+
+      /* 公司片区 */
+      // viewer.camera.setView({
+      //   destination: new Cesium.Cartesian3(-2108796.0220383317, 4805915.002069981, 3614304.859235633),
+      //   orientation: {
+      //     heading: 0.6091569770611214,
+      //     pitch: -0.37831468993759243,
+      //     roll: 0.0019361826038952756,
+      //   },
+      // });
+    },
     rightAsideBarTabClose(tabIndex) {
       // eslint-disable-next-line no-console
       console.log(tabIndex);
-
-      // console.log(a);
-      // let tabs = this.editableTabs;
-      // let activeName = this.editableTabsValue;
-      // if (activeName === targetName) {
-      //   tabs.forEach((tab, index) => {
-      //     if (tab.name === targetName) {
-      //       let nextTab = tabs[index + 1] || tabs[index - 1];
-      //       if (nextTab) {
-      //         activeName = nextTab.name;
-      //       }
-      //     }
-      //   });
-      // }
-
-      // this.editableTabsValue = activeName;
-      // this.editableTabs = tabs.filter(tab => tab.name !== targetName);
-      // }
     },
   },
 };

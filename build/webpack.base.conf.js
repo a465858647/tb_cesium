@@ -3,8 +3,8 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
-
-function resolve (dir) {
+const cesiumSource = '../node_modules/cesium/Source'; // cesium配置
+function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
@@ -29,7 +29,12 @@ module.exports = {
     filename: '[name].js',
     publicPath: process.env.NODE_ENV === 'production'
       ? config.build.assetsPublicPath
-      : config.dev.assetsPublicPath
+      : config.dev.assetsPublicPath,
+    sourcePrefix: ' '
+  },
+  //--cesium--配置----------------------------------------
+  amd: {
+    toUrlUndefined: true
   },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
@@ -75,7 +80,8 @@ module.exports = {
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       }
-    ]
+    ],
+    unknownContextCritical: false, //让Webpack打印载入特定库时候的警告
   },
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
