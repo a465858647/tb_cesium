@@ -212,3 +212,29 @@ ul[role="menu"] .el-checkbox {
   font-size: 10px !important;
   color: var(--fontColor);
 }
+.toolBox-all {
+  border: 1px solid #858585;
+  padding: 5px 15px;
+}
+.toolBox-noTop {
+  border-left: 1px solid #858585;
+  border-right: 1px solid #858585;
+  border-bottom: 1px solid #858585;
+  padding: 10px 15px;
+}
+.toolBox-noTop-table {
+  border-left: 1px solid #858585;
+  border-right: 1px solid #858585;
+  border-bottom: 1px solid #858585;
+  padding: 10px 0px;
+}
+.toolBox-bottom-table {
+  border-left: 1px solid #858585;
+  border-right: 1px solid #858585;
+  border-bottom: 1px solid #858585;
+  padding: 10px 15px;
+}
+
+#rightAsideBar .el-form-item__label {
+  color: white;
+}

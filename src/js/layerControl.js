@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import * as Cesium from 'cesium';
 // 菜单树配置
 const layerControlDataOption = [{
@@ -15,6 +16,9 @@ const layerControlDataOption = [{
   label: '地形',
   children: [{
     id: '2-1',
+    label: '世界地形',
+  }, {
+    id: '2-2',
     label: '土方开挖片区地形',
   }],
 }, {
@@ -61,14 +65,15 @@ const earthWorkTerrainProvider = new Cesium.CesiumTerrainProvider({
   requestVertexNormals: true,
 });
 const ellipsoidTerrainProvider = new Cesium.EllipsoidTerrainProvider();
-const earthWordTilesSet = new Cesium.Cesium3DTileset({
+const earthWordTilesSetOption = {
   url: 'http://172.16.100.8:8001/金水区三维模型/未来路街道模型/15和18区/tileset.json',
   preferLeaves: true,
   dynamicScreenSpaceError: true,
   skipLevelOfDetail: false,
   skipLevels: 1,
   loadSiblings: true,
-});
+};
+let earthWordTilesSet = {};
 
 export default class LayerControl {
   constructor(viewerId, vue, layerControlData, layerControlProps) {
@@ -78,43 +83,37 @@ export default class LayerControl {
     this.layerControlProps = layerControlProps || layerControlPropsOption;
   }
   layerTreesCheckChanged = (obj, selected, hasChild) => {
-    const nodeId = obj.id;
     if (hasChild === false) {
       if (obj.label === 'Cesium影像' && selected === true) {
         window[this.viewerId].imageryLayers.add(cesiumImageryLayer);
-        this.vue.layerControlcheckedKeys.push(nodeId);
       }
       if (obj.label === 'Cesium影像' && selected === false) {
         window[this.viewerId].imageryLayers.remove(cesiumImageryLayer, false);
-        const index = this.vue.layerControlcheckedKeys.findIndex(id => id === nodeId);
-        this.vue.layerControlcheckedKeys.splice(index, 1);
       }
       if (obj.label === '天地图影像' && selected === true) {
         window[this.viewerId].imageryLayers.add(tdtImageryLayer);
-        this.vue.layerControlcheckedKeys.push(nodeId);
       }
       if (obj.label === '天地图影像' && selected === false) {
         window[this.viewerId].imageryLayers.remove(tdtImageryLayer, false);
-        const index = this.vue.layerControlcheckedKeys.findIndex(id => id === nodeId);
-        this.vue.layerControlcheckedKeys.splice(index, 1);
+      }
+      if (obj.label === '世界地形' && selected === true) {
+        window[this.viewerId].terrainProvider = Cesium.createWorldTerrain();
+      }
+      if (obj.label === '世界地形' && selected === false) {
+        window[this.viewerId].terrainProvider = undefined;
       }
       if (obj.label === '土方开挖片区地形' && selected === true) {
         window[this.viewerId].terrainProvider = earthWorkTerrainProvider;
-        this.vue.layerControlcheckedKeys.push(nodeId);
       }
       if (obj.label === '土方开挖片区地形' && selected === false) {
         window[this.viewerId].terrainProvider = ellipsoidTerrainProvider;
-        const index = this.vue.layerControlcheckedKeys.findIndex(id => id === nodeId);
-        this.vue.layerControlcheckedKeys.splice(index, 1);
       }
       if (obj.label === '土方开挖片区倾斜' && selected === true) {
+        earthWordTilesSet = new Cesium.Cesium3DTileset(earthWordTilesSetOption);
         window[this.viewerId].scene.primitives.add(earthWordTilesSet);
-        this.vue.layerControlcheckedKeys.push(nodeId);
       }
       if (obj.label === '土方开挖片区倾斜' && selected === false) {
         window[this.viewerId].scene.primitives.remove(earthWordTilesSet);
-        const index = this.vue.layerControlcheckedKeys.findIndex(id => id === nodeId);
-        this.vue.layerControlcheckedKeys.splice(index, 1);
       }
     }
   }
